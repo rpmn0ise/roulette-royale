@@ -4,7 +4,6 @@ Une simulation interactive et réaliste de roulette de casino européenne, déve
 
 ![Licence](https://img.shields.io/badge/Licence-MIT-green.svg)
 ![Technos](https://img.shields.io/badge/Tech-HTML5%20%2F%20CSS3%20%2F%20JS-orange.svg)
-![Niveau](https://img.shields.io/badge/Projet-NSI%20Premi%C3%A8re-blue.svg)
 
 ---
 
@@ -45,7 +44,7 @@ Ce projet s'exécute entièrement côté client (dans le navigateur), il n'y a b
 
 1. **Cloner le dépôt :**
    ```bash
-   git clone [https://github.com/rpmn0ise/roulette-royale.git](https://github.com/rpmn0ise/roulette-royale.git)
+   git clone https://github.com/rpmn0ise/roulette-royale.git
    ```
 2. **Ouvrir le projet :**
    Double-cliquez simplement sur le fichier index.html pour le lancer dans votre navigateur préféré (Chrome, Firefox, Edge, Safari...).
