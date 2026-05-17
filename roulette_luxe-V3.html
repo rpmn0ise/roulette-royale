@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSI Lycée Angellier - Roulette Royale Pro</title>
+    <style>
+        /* --- STYLE CSS VERSION CASINO DE LUXE --- */
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --casino-green: radial-gradient(circle, #1a643c 0%, #0d3a24 100%);
+            --bg-dark: #0b0f0d;
+            --red-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --black-gradient: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.6);
+            font-size: 2.5em;
+        }
+
+        /* --- CONTENEUR PRINCIPAL (TAPIS VERT) --- */
+        #plateau {
+            display: flex;
+            background: var(--casino-green);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 4px solid var(--gold);
+            gap: 30px;
+            align-items: center;
+            width: 1250px; /* Élargi pour contenir confortablement tout le tapis */
+            box-sizing: border-box; /* Empêche les éléments intérieurs d'éclater le conteneur */
+        }
+
+        /* --- ZONE ROULETTE (GAUCHE) --- */
+        .zone-roulette {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+            width: 260px;
+        }
+
+        .roulette-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 6px solid var(--gold);
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+        }
+
+        .roulette-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px dashed rgba(255,255,255,0.2);
+            transition: transform 3s cubic-bezier(0.1, 0.8, 0.1, 1);
+        }
+
+        .bille {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            top: 15px;
+            left: 102px;
+            box-shadow: 0 0 15px #fff;
+            transform-origin: 8px 95px;
+            transition: transform 3s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        #ecran-affichage {
+            font-size: 4.5em;
+            font-weight: bold;
+            color: var(--gold);
+            font-family: monospace;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            margin: 5px 0;
+        }
+
+        /* --- ZONE TAPIS DE MISE (DROITE) --- */
+        .zone-tapis {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            user-select: none;
+            flex-grow: 1; /* Prend tout l'espace restant proprement */
+        }
+
+        .grille-principale {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        #case0 {
+            display: flex;
+            margin-right: 6px;
+        }
+
+        #bouton0 {
+            background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+            color: white;
+            border: 2px solid var(--gold);
+            width: 70px;
+            height: 100%;
+            min-height: 246px;
+            font-size: 2.2em;
+            cursor: pointer;
+            border-radius: 8px 0 0 8px;
+            transition: all 0.2s;
+        }
+
+        .grille-numeros {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .ligne-num {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .ligne-num button {
+            flex: 1; /* Répartit les boutons équitablement sur la largeur disponible */
+            height: 78px;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        /* Couleurs */
+        .btn-rouge { background: var(--red-gradient); color: white; }
+        .btn-noir { background: var(--black-gradient); color: white; }
+
+        /* Rangs inférieurs réalignés sur la grille */
+        .ligne-options {
+            display: flex;
+            gap: 6px;
+            margin-top: 2px;
+            margin-left: 76px; /* Aligné pile après le bouton 0 (70px + 6px de gap) */
+        }
+
+        .btn-option {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--gold-light);
+            border: 2px solid var(--gold);
+            height: 55px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        #boutonRouge { background: #961c1c; color: white; }
+        #boutonNoir { background: #1c2833; color: white; }
+
+        button:hover:not(:disabled) {
+            filter: brightness(1.2);
+            transform: translateY(-1px);
+        }
+
+        button.selection-pari {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%) !important;
+            color: #000 !important;
+            box-shadow: 0 0 15px #f1c40f;
+            border-color: #fff;
+            transform: scale(0.97);
+        }
+
+        /* --- INTERFACE INFÉRIEURE --- */
+        .interface-basse {
+            width: 1250px;
+            margin-top: 25px;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 1.2em;
+            display: grid;
+            grid-template-columns: 1.5fr 2fr 1fr;
+            gap: 20px;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .info-panel p { margin: 6px 0; }
+        .label-or { color: #ffd700; font-weight: bold; }
+
+        #mise-active {
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: 1px solid #c5a059;
+            font-family: monospace;
+            max-width: 350px;
+            word-wrap: break-word;
+            display: inline-block;
+        }
+
+        #mise-input {
+            background-color: #000;
+            border: 2px solid var(--gold);
+            color: #ffd700;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            width: 90px;
+        }
+
+        .actions-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 12px 0;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            border: none;
+        }
+
+        #lancer-btn { background: linear-gradient(135deg, #ffd700 0%, #b89714 100%); color: #000000; }
+        #rejouer-btn { background: linear-gradient(135deg, #4a554f 0%, #2b332f 100%); color: #e5c158; border: 1px solid #c5a059; }
+        #commentaire { font-style: italic; color: #bdc3c7; text-align: center; grid-column: span 3; margin-top: 5px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <h1>Roulette Royale — Lycée Angellier</h1>
+
+    <div id="plateau">
+        <div class="zone-roulette">
+            <div class="roulette-container">
+                <div class="roulette-ring" id="roulette-ring"></div>
+                <div class="bille" id="bille"></div>
+            </div>
+            <div id="ecran-affichage">--</div>
+            <p style="margin:5px 0;">Numéro tiré : <span id="tirage" class="label-or">--</span></p>
+            <p style="margin:5px 0;">Résultat : <span id="gain" style="font-weight:bold;">--</span></p>
+        </div>
+
+        <div class="zone-tapis">
+            <div class="grille-principale">
+                <div id="case0">
+                    <button id="bouton0">0</button>
+                </div>
+                
+                <div class="grille-numeros">
+                    <div class="ligne-num">
+                        <button id="bouton3" class="btn-rouge">3</button>
+                        <button id="bouton6" class="btn-noir">6</button>
+                        <button id="bouton9" class="btn-rouge">9</button>
+                        <button id="bouton12" class="btn-rouge">12</button>
+                        <button id="bouton15" class="btn-noir">15</button>
+                        <button id="bouton18" class="btn-rouge">18</button>
+                        <button id="bouton21" class="btn-rouge">21</button>
+                        <button id="bouton24" class="btn-noir">24</button>
+                        <button id="bouton27" class="btn-rouge">27</button>
+                        <button id="bouton30" class="btn-rouge">30</button>
+                        <button id="bouton33" class="btn-noir">33</button>
+                        <button id="bouton36" class="btn-rouge">36</button>
+                    </div>
+                    <div class="ligne-num">
+                        <button id="bouton2" class="btn-noir">2</button>
+                        <button id="bouton5" class="btn-rouge">5</button>
+                        <button id="bouton8" class="btn-noir">8</button>
+                        <button id="bouton11" class="btn-noir">11</button>
+                        <button id="bouton14" class="btn-rouge">14</button>
+                        <button id="bouton17" class="btn-noir">17</button>
+                        <button id="bouton20" class="btn-noir">20</button>
+                        <button id="bouton23" class="btn-rouge">23</button>
+                        <button id="bouton26" class="btn-noir">26</button>
+                        <button id="bouton29" class="btn-noir">29</button>
+                        <button id="bouton32" class="btn-rouge">32</button>
+                        <button id="bouton35" class="btn-noir">35</button>
+                    </div>
+                    <div class="ligne-num">
+                        <button id="bouton1" class="btn-rouge">1</button>
+                        <button id="bouton4" class="btn-noir">4</button>
+                        <button id="bouton7" class="btn-rouge">7</button>
+                        <button id="bouton10" class="btn-noir">10</button>
+                        <button id="bouton13" class="btn-noir">13</button>
+                        <button id="bouton16" class="btn-rouge">16</button>
+                        <button id="bouton19" class="btn-rouge">19</button>
+                        <button id="bouton22" class="btn-noir">22</button>
+                        <button id="bouton25" class="btn-rouge">25</button>
+                        <button id="bouton28" class="btn-noir">28</button>
+                        <button id="bouton31" class="btn-noir">31</button>
+                        <button id="bouton34" class="btn-rouge">34</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ligne-options">
+                <button id="boutonpremiere12" class="btn-option">1ère 12</button>
+                <button id="boutondeuxieme12" class="btn-option">2ème 12</button>
+                <button id="boutontroisieme12" class="btn-option">3ème 12</button>
+            </div>
+            
+            <div class="ligne-options">
+                <button id="boutona18" class="btn-option">1 - 18</button>
+                <button id="boutonPair" class="btn-option">Pair</button>
+                <button id="boutonRouge" class="btn-option">Rouge</button>
+                <button id="boutonNoir" class="btn-option">Noir</button>
+                <button id="boutonImpair" class="btn-option">Impair</button>
+                <button id="boutona36" class="btn-option">19 - 36</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="interface-basse">
+        <div class="info-panel">
+            <p>Banque Royale : <span id="portefeuille" class="label-or">100</span> <span class="label-or">€</span></p>
+            <p>Mise (€) : <input id="mise-input" type="number" value="20" min="1"></p>
+        </div>
+        
+        <div class="info-panel" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+            <p>Pari actif : [ <span id="mise-active">-</span> ]</p>
+            <p id="details-pari" style="font-size: 0.9em; color: #bdc3c7;">Aucun pari engagé</p>
+        </div>
+
+        <div class="actions-panel">
+            <button id="rejouer-btn" class="btn-main">Effacer</button>
+            <button id="lancer-btn" class="btn-main">Lancer</button>
+        </div>
+
+        <p id="commentaire">Faites vos jeux, posez vos jetons sur le tapis !</p>
+    </div>
+
+<script>
+    const ROUGE = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+    const NOIR = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
+    
+    let pari = [];
+    let banque = 100;
+    let enCours = false;
+    let detailsPari = "";
+
+    document.getElementById("portefeuille").innerHTML = banque;
+
+    document.addEventListener("click", function(event) {
+        if (enCours) return;
+        
+        let targetId = event.target.id;
+        if (!targetId || targetId === "plateau" || targetId === "mise-input" || targetId === "lancer-btn" || targetId === "rejouer-btn" || targetId === "grille-numeros" || event.target.className === "ligne-num") {
+            return;
+        }
+
+        if (!targetId.startsWith("bouton") || isNaN(targetId.replace("bouton", ""))) {
+            reinitialiseGraphique();
+        }
+
+        let bouton = document.getElementById(targetId);
+        if (bouton) bouton.classList.add("selection-pari");
+
+        if (targetId === "bouton0") {
+            detailsPari = "Pari Plein (0). Gain x35.";
+            if (!pari.includes(0)) pari.push(0);
+        } 
+        else if (targetId.startsWith("bouton") && !isNaN(targetId.replace("bouton", ""))) {
+            let val = parseInt(targetId.replace("bouton", ""));
+            detailsPari = `Pari plein sur le ${val}. Gain x35.`;
+            if (!pari.includes(val)) pari.push(val);
+        }
+        else if (targetId === "boutonpremiere12") { pari = Array.from({length: 12}, (_, i) => i + 1); detailsPari = "1ère Douzaine (1-12). Gain x2."; }
+        else if (targetId === "boutondeuxieme12") { pari = Array.from({length: 12}, (_, i) => i + 13); detailsPari = "2ème Douzaine (13-24). Gain x2."; }
+        else if (targetId === "boutontroisieme12") { pari = Array.from({length: 12}, (_, i) => i + 25); detailsPari = "3ème Douzaine (25-36). Gain x2."; }
+        else if (targetId === "boutona18") { pari = Array.from({length: 18}, (_, i) => i + 1); detailsPari = "Manque (1-18). Gain x1."; }
+        else if (targetId === "boutonPair") { pari = []; for(let i=1; i<=18; i++) pari.push(i*2); detailsPari = "Pair. Gain x1."; }
+        else if (targetId === "boutonRouge") { pari = [...ROUGE]; detailsPari = "Couleur Rouge. Gain x1."; }
+        else if (targetId === "boutonNoir") { pari = [...NOIR]; detailsPari = "Couleur Noir. Gain x1."; }
+        else if (targetId === "boutonImpair") { pari = []; for(let i=0; i<18; i++) pari.push(i*2+1); detailsPari = "Impair. Gain x1."; }
+        else if (targetId === "boutona36") { pari = Array.from({length: 18}, (_, i) => i + 19); detailsPari = "Passe (19-36). Gain x1."; }
+
+        document.getElementById("mise-active").innerHTML = pari.sort((a,b)=>a-b).join(",");
+        document.getElementById("details-pari").innerHTML = detailsPari;
+    });
+
+    document.getElementById("lancer-btn").addEventListener("click", lancerJeu);
+    document.getElementById("rejouer-btn").addEventListener("click", totalReset);
+
+    function reinitialiseGraphique() {
+        document.querySelectorAll("button").forEach(btn => {
+            btn.classList.remove("selection-pari");
+        });
+    }
+
+    function totalReset() {
+        if (enCours) return;
+        pari = [];
+        detailsPari = "Aucun pari engagé";
+        reinitialiseGraphique();
+        document.getElementById("mise-active").innerHTML = "-";
+        document.getElementById("details-pari").innerHTML = detailsPari;
+        document.getElementById("commentaire").innerHTML = "Faites vos jeux ! Posez vos jetons sur le tapis.";
+        document.getElementById("tirage").innerHTML = "--";
+        document.getElementById("gain").innerHTML = "--";
+        document.getElementById("ecran-affichage").innerHTML = "--";
+    }
+
+    function lancerJeu() {
+        if (enCours) return;
+        let miseInput = document.getElementById("mise-input");
+        let miseVal = parseInt(miseInput.value);
+
+        if (pari.length === 0) {
+            document.getElementById("commentaire").innerHTML = "Veuillez sélectionner une mise sur le tapis d'abord.";
+            return;
+        }
+        if (isNaN(miseVal) || miseVal <= 0) {
+            document.getElementById("commentaire").innerHTML = "Veuillez entrer une mise valide (au moins 1€).";
+            return;
+        }
+        if (miseVal > banque) {
+            document.getElementById("commentaire").innerHTML = "Vous n'avez pas assez d'argent dans votre banque Royale !";
+            return;
+        }
+
+        document.getElementById("commentaire").innerHTML = "Rien ne va plus ! La bille tourne...";
+        enCours = true;
+
+        let angleRoue = Math.floor(Math.random() * 360) + 1440;
+        let angleBille = -(Math.floor(Math.random() * 360) + 1440);
+
+        document.getElementById("roulette-ring").style.transform = `rotate(${angleRoue}deg)`;
+        document.getElementById("bille").style.transform = `rotate(${angleBille}deg)`;
+
+        let tirage = Math.floor(Math.random() * 37);
+
+        setTimeout(() => {
+            enCours = false;
+            document.getElementById("ecran-affichage").innerHTML = tirage;
+            document.getElementById("tirage").innerHTML = tirage;
+
+            let gagne = false;
+            let multiplicateur = 0;
+
+            if (pari.length === 1) { multiplicateur = 35; }
+            else if (detailsPari.includes("Douzaine")) { multiplicateur = 2; }
+            else if (detailsPari.includes("Gain x1.")) { multiplicateur = 1; }
+
+            if (pari.includes(tirage)) {
+                gagne = true;
+            } else if (tirage === 0 && pari.length > 1) {
+                gagne = false; 
+            }
+
+            let gainElement = document.getElementById("gain");
+
+            if (gagne) {
+                let gains = multiplicateur * miseVal;
+                gainElement.innerHTML = `Gagné ! +${gains} €`;
+                gainElement.style.color = "#2ecc71";
+                banque += gains;
+            } else {
+                gainElement.innerHTML = `Perdu. -${miseVal} €`;
+                gainElement.style.color = "#e74c3c";
+                banque -= miseVal;
+            }
+
+            document.getElementById("portefeuille").innerHTML = banque;
+            document.getElementById("commentaire").innerHTML = "Les jeux sont ouverts. Faites vos jeux !";
+            
+            document.getElementById("roulette-ring").style.transition = 'none';
+            document.getElementById("bille").style.transition = 'none';
+            document.getElementById("roulette-ring").style.transform = `rotate(${angleRoue % 360}deg)`;
+            document.getElementById("bille").style.transform = `rotate(${angleBille % 360}deg)`;
+            setTimeout(() => {
+                document.getElementById("roulette-ring").style.transition = 'transform 3s cubic-bezier(0.1, 0.8, 0.1, 1)';
+                document.getElementById("bille").style.transition = 'transform 3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+            }, 50);
+
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
